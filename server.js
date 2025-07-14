@@ -10,6 +10,10 @@ require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+console.log("MONGO_URI:", process.env.MONGO_URI);
+console.log("GEMINI_API_KEY:", process.env.GEMINI_API_KEY);
+console.log("JWT_SECRET:", process.env.JWT_SECRET);
+console.log("GMAIL_APP_PASSWORD:", process.env.GMAIL_APP_PASSWORD);
 
 // Middleware
 app.use(express.json({ limit: '10mb' }));
