@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Vehicle Entry</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="data:,">
+  <style>
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      left: 50%;
+      top: 10%;
+      transform: translate(-50%, -50%);
+      background-color: #fff;
+      color: #222;
+      padding: 16px 28px;
+      border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+      font-size: 16px;
+      font-weight: 500;
+      text-align: center;
+      border-left: 5px solid green;
+      max-width: 80%;
+    }
+    .modal.error {
+      border-left-color: red;
+    }
+    .modal.show {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ✅ Navbar sabse upar -->
+  <nav class="navbar">
+    <a href="/entry">Vehicle Entry</a>
+    <a href="/exit">Vehicle Exit</a>
+    <a href="/view">View Vehicles</a>
+    <a href="/charges">Change Charges</a>
+    <a href="index.html" class="logout-link">Logout</a>
+  </nav>
+
+  <!-- ✅ Container navbar ke neeche -->
+  <div class="container">
+    <h3>Vehicle Entry</h3>
+
+    <div class="input-section">
+      <label for="numberPlate">Number Plate</label>
+      <input type="text" id="numberPlate" placeholder="GJ01AA1234" />
+      <small style="color: gray;">Format: GJ10AC3870 (e.g., GJ10AA1234 or AB12C1234)</small>
+    </div>
+
+    <div class="btn-group">
+      <button onclick="submitEntry()">Manual Entry</button>
+      <button onclick="openCamera()">Scan via Camera</button>
+    </div>
+
+    <div id="cameraSection" style="display: none; margin-top: 20px;">
+      <label for="cameraSelect">Choose Camera:</label>
+      <select id="cameraSelect"></select><br /><br />
+      <video id="video" width="300" height="200" autoplay></video>
+      <canvas id="canvas" width="300" height="200" style="display: none;"></canvas>
+      <button onclick="captureAndScan()">Capture & Scan</button>
+    </div>
+
+    <p id="statusMsg" style="margin-top: 1em;"></p>
+
+    <!-- ✅ Footer inside container -->
+    <footer class="footer">
+      <p>
+        Crafted with ❤ Marmik S Jethwa
+        Email: <a href="mailto:marmikjethwa@gmail.com">marmikjethwa@gmail.com</a> |
+        Instagram: <a href="https://instagram.com/marmikjethwa" target="_blank">marmikjethwa</a> |
+        GitHub: <a href="https://github.com/marmikjethwa" target="_blank">marmikjethwa</a>
+      </p>
+    </footer>
+  </div>
+
+  <!-- ✅ Modal HTML -->
+  <div id="customModal" class="modal">
+    <div class="modal-content" id="modalMessage"></div>
+  </div>
+
+  <script src="entry.js"></script>
+</body>
+</html>

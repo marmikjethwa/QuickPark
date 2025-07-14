@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QuickPark</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    /* Global Reset & Box Sizing */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* Body Background & Font */
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      /* Two-color linear gradient background */
+      background: linear-gradient(135deg, #3498db 0%, #34495e 100%); /* <-- Updated background */
+      min-height: 100vh; /* Ensures background covers full viewport height */
+      color: #333; /* Default text color */
+      line-height: 1.6; /* Standard line height for readability */
+    }
+
+    /* Background Overlay for subtle effects (optional) */
+    .background-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background:
+        radial-gradient(circle at 20% 80%, rgba(52, 152, 219, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+      z-index: -1; /* Puts the overlay behind content */
+    }
+
+    /* Main Content Container */
+    .main-container {
+      max-width: 1200px; /* Limits overall content width */
+      margin: 0 auto; /* Centers the container horizontally */
+      padding: 20px; /* Padding inside the container */
+    }
+
+    /* Header Styling */
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+      color: white; /* White text for contrast on blue background */
+    }
+
+    .header h1 {
+      font-size: 3rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); /* Adds subtle shadow to text */
+    }
+
+    .header .subtitle {
+      font-size: 1.2rem;
+      opacity: 0.9;
+      font-weight: 300;
+    }
+
+    /* Main Content Layout (Grid) */
+    .main-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr; /* Two columns */
+      gap: 40px; /* Space between grid items */
+      align-items: start; /* Aligns items to the start of their grid area */
+      margin-bottom: 40px;
+    }
+
+    /* Form Container Styling */
+    .form-container, .about-section, .footer {
+      background: rgba(255, 255, 255, 0.95); /* Semi-transparent white background */
+      backdrop-filter: blur(10px); /* Blurry effect behind content */
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      position: relative;
+      overflow: hidden; /* Hides content outside border-radius */
+    }
+
+    .form-container::before, .about-section::before, .footer::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #3498db, #2980b9); /* Top gradient border */
+    }
+
+    .form-title {
+      font-size: 2rem;
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 30px;
+      color: #2c3e50;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 15px 20px;
+      border: 2px solid #e1e8ed;
+      border-radius: 12px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      background: #f8f9fa;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #3498db;
+      background: white;
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+    }
+
+    .form-group input::placeholder {
+      color: #6c757d;
+    }
+
+    .password-field {
+      position: relative;
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #6c757d;
+      cursor: pointer;
+      font-size: 1.1rem;
+      transition: color 0.3s ease;
+    }
+
+    .password-toggle:hover {
+      color: #3498db;
+    }
+
+    /* Button Styles */
+    .btn {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+      color: white;
+      margin-bottom: 20px;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(52, 152, 219, 0.3);
+    }
+
+    .btn-secondary {
+      background: #f8f9fa;
+      color: #3498db;
+      border: 2px solid #3498db;
+      margin-bottom: 15px;
+    }
+
+    .btn-secondary:hover {
+      background: #3498db;
+      color: white;
+    }
+
+    /* Switch Link for Login/Signup */
+    .switch-link {
+      text-align: center;
+      margin-top: 20px;
+      color: #6c757d;
+    }
+
+    .switch-link a {
+      color: #3498db;
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.3s ease;
+    }
+
+    .switch-link a:hover {
+      color: #2980b9;
+    }
+
+    /* About Section Specific Styling */
+    .about-section h2 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: #2c3e50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .about-section p {
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: #555;
+      margin-bottom: 15px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-top: 30px;
+    }
+
+    .feature-card {
+      background: rgba(52, 152, 219, 0.1);
+      border-radius: 15px;
+      padding: 20px;
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .feature-card i {
+      font-size: 2rem;
+      color: #3498db;
+      margin-bottom: 10px;
+    }
+
+    .feature-card h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #2c3e50;
+      margin-bottom: 5px;
+    }
+
+    .feature-card p {
+      font-size: 0.9rem;
+      color: #666;
+      margin: 0;
+    }
+
+    /* Footer Styling */
+    .footer {
+      margin-top: 40px; /* Space above footer */
+    }
+
+    .footer .author {
+      font-size: 1.1rem;
+      color: #2c3e50;
+      margin-bottom: 15px;
+      font-weight: 600;
+    }
+
+    .footer .links {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+
+    .footer .links a {
+      color: #3498db;
+      text-decoration: none;
+      transition: color 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .footer .links a:hover {
+      color: #2980b9;
+    }
+
+    .footer .copyright {
+      color: #6c757d;
+      font-size: 0.9rem;
+    }
+
+    /* Message Styling (for OTP feedback) */
+    .message {
+      padding: 10px 15px;
+      border-radius: 8px;
+      margin-top: 10px;
+      font-size: 0.9rem;
+    }
+
+    .message.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .message.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    /* Loading Spinner */
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid #f3f3f3;
+      border-top: 2px solid #3498db;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-right: 10px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* OTP Section Specific Styling */
+    .otp-section {
+      background: rgba(52, 152, 219, 0.05);
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 15px;
+      border: 1px solid rgba(52, 152, 219, 0.2);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .main-container {
+        padding: 10px;
+      }
+
+      .main-content {
+        grid-template-columns: 1fr; /* Single column on small screens */
+        gap: 20px;
+      }
+
+      .form-container, .about-section, .footer {
+        padding: 30px 20px;
+      }
+
+      .header h1 {
+        font-size: 2.5rem;
+      }
+
+      .footer .links {
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="background-overlay"></div>
+
+  <div class="main-container">
+    <div class="header">
+      <h1><i class="fas fa-parking"></i> QuickPark</h1>
+      <p class="subtitle">Parking Management System</p>
+    </div>
+
+    <div class="main-content">
+      <div class="form-container">
+        <h2 class="form-title" id="form-title">Login</h2>
+
+        <form id="login-form" onsubmit="login(event)">
+          <div class="form-group">
+            <input type="email" id="loginUserId" placeholder="Email (User ID)" required>
+          </div>
+
+          <div class="form-group password-field">
+            <input type="password" id="loginPassword" placeholder="Password" required>
+            <button type="button" class="password-toggle" onclick="togglePassword('loginPassword')">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-sign-in-alt"></i> Login
+          </button>
+
+          <div class="switch-link">
+            <p>Don't have an account? <a href="#" onclick="switchToSignup()">Sign up</a></p>
+          </div>
+        </form>
+
+        <form id="otp-form" onsubmit="verifyOtp(event)" style="display: none;">
+          <div class="otp-section">
+            <div class="form-group">
+              <input type="text" id="otpInput" placeholder="Enter OTP" required>
+            </div>
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-check"></i> Verify OTP
+            </button>
+            <p id="otpMessage" class="message success" style="display: none;"></p>
+          </div>
+        </form>
+
+        <form id="signup-form" onsubmit="register(event)" style="display: none;">
+          <div class="form-group">
+            <input type="email" id="registerUserId" placeholder="Email (User ID)" required>
+          </div>
+
+          <button type="button" class="btn btn-secondary" onclick="sendSignupOtp()">
+            <i class="fas fa-paper-plane"></i> Get OTP
+          </button>
+
+          <div id="signup-otp-section" class="otp-section" style="display: none;">
+            <div class="form-group">
+              <input type="text" id="signupOtpInput" placeholder="Enter OTP" required>
+            </div>
+            <button type="button" class="btn btn-secondary" onclick="verifySignupOtp()">
+              <i class="fas fa-check"></i> Verify OTP
+            </button>
+            <p id="signupOtpMessage" class="message success" style="display: none;"></p>
+          </div>
+
+          <div id="signup-extra-fields" style="display: none;">
+            <div class="form-group password-field">
+              <input type="password" id="registerPassword" placeholder="Password" required>
+              <button type="button" class="password-toggle" onclick="togglePassword('registerPassword')">
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+
+            <div class="form-group">
+              <input type="number" id="fixedCharge" placeholder="Fixed Charge ($)" required>
+            </div>
+
+            <div class="form-group">
+              <input type="number" id="hourlyCharge" placeholder="Hourly Charge ($)" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-user-plus"></i> Register
+            </button>
+          </div>
+
+          <div class="switch-link">
+            <p>Already have an account? <a href="#" onclick="switchToLogin()">Login</a></p>
+          </div>
+        </form>
+      </div>
+
+      <div class="about-section">
+        <h2>Welcome to QuickPark <i class="fas fa-parking"></i></h2>
+        <p>
+          QuickPark is a comprehensive solution designed to streamline and automate <strong>vehicle parking operations</strong>.
+          Our system provides an efficient way to manage vehicle entries and exits, calculate parking charges,
+          and keep track of all parked vehicles in real-time.
+        </p>
+        <p>
+          Whether you're a parking lot owner or an administrator, QuickPark offers intuitive features to simplify
+          your daily operations and enhance user experience.
+        </p>
+
+        <div class="features-grid">
+          <div class="feature-card">
+            <i class="fas fa-edit"></i>
+            <h3>Manual Entry</h3>
+            <p>Quick vehicle registration with manual input</p>
+          </div>
+          <div class="feature-card">
+            <i class="fas fa-camera"></i>
+            <h3>Camera Scanning</h3>
+            <p>Automated license plate recognition</p>
+          </div>
+          <div class="feature-card">
+            <i class="fas fa-calculator"></i>
+            <h3>Dynamic Pricing</h3>
+            <p>Automatic charge calculation based on time</p>
+          </div>
+          <div class="feature-card">
+            <i class="fas fa-chart-line"></i>
+            <h3>Real-time Overview</h3>
+            <p>Complete tracking of all parked vehicles</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p class="author">Crafted with <i class="fas fa-heart" style="color: #e74c3c;"></i> by <strong>Marmik S Jethwa</strong></p>
+      <div class="links">
+        <a href="mailto:marmikjethwa@gmail.com">
+          <i class="fas fa-envelope"></i> marmikjethwa@gmail.com
+        </a>
+        <a href="https://instagram.com/marmikjethwa" target="_blank">
+          <i class="fab fa-instagram"></i> @marmikjethwa
+        </a>
+        <a href="https://github.com/marmikjethwa" target="_blank">
+          <i class="fab fa-github"></i> marmikjethwa
+        </a>
+      </div>
+      <p class="copyright">&copy; 2025 QuickPark. All rights reserved.</p>
+    </div>
+  </div>
+
+  <script>
+    
+  </script>
+  <script src="index.js"></script>
+</body>
+</html>

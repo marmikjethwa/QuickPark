@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>View Vehicles</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .filter-section {
+      margin-bottom: 20px;
+      padding: 15px;
+      background-color: #f4f4f4;
+      border-radius: 5px;
+    }
+    .filter-section input, .filter-section select {
+      margin: 5px;
+      padding: 6px;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+  <a href="/entry">Vehicle Entry</a>
+  <a href="/exit">Vehicle Exit</a>
+  <a href="/view">View Vehicles</a>
+  <a href="/charges">Change Charges</a>
+  <a href="index.html" class="logout-link">Logout</a>
+</nav>
+
+  <div class="container">
+    <h2>All Vehicles</h2>
+
+    <div class="filter-section">
+      <input type="text" id="searchPlate" placeholder="Number Plate (e.g. GJ10AC1234)" />
+      <input type="number" id="searchLot" placeholder="Parking Lot" />
+      <input type="date" id="fromDate" />
+      <input type="date" id="toDate" />
+      <select id="status">
+        <option value="">All Status</option>
+        <option value="parked">Parked</option>
+        <option value="exited">Exited</option>
+      </select>
+      <button onclick="filterVehicles()">Search</button>
+    </div>
+
+    <table id="vehicleTable" border="1">
+      <thead>
+        <tr>
+          <th>Entry ID</th>
+          <th>Number Plate</th>
+          <th>Entry Time</th>
+          <th>Exit Time</th>
+          <th>Lot No.</th>
+          <th>Status</th>
+          <th>Amount</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <footer class="footer">
+      <p>
+        Crafted with ❤ Marmik S Jethwa 
+        Email: <a href="mailto:marmikjethwa@gmail.com">marmikjethwa@gmail.com</a> |
+        Instagram: <a href="https://instagram.com/marmikjethwa" target="_blank">marmikjethwa</a> |
+        GitHub: <a href="https://github.com/marmikjethwa" target="_blank">marmikjethwa</a>
+      </p>
+    </footer>
+  </div>
+
+
+  <script src="view.js"></script>
+</body>
+</html>
