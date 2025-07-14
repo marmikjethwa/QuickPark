@@ -301,28 +301,6 @@ app.get('/api/parking-lots', authenticateToken, async (req, res) => {
     });
 });
 
-// 🔁 OCR Proxy to Optiic API
-/*app.post('/api/ocr', authenticateToken, async (req, res) => {
-    try {
-        const { base64Image } = req.body;
-        const response = await fetch('https://api.optiic.dev/parse/image', {
-            method: 'POST',
-            headers: {
-                'Authorization': 'Bearer 9eiXyd1prDcB4s6h7RndBRJKXnabF8rmtX1H8Zh6SE69',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ image: base64Image })
-        });
-
-        const result = await response.json();
-        console.log("🔍 Optiic OCR Result:", result);
-        const detectedText = result?.results?.[0]?.text || '';
-        res.json({ text: detectedText });
-    } catch (err) {
-        console.error("🔴 OCR Proxy Error:", err);
-        res.status(500).json({ error: 'OCR failed', details: err.message });
-    }
-});*/
 app.post('/api/vendor/send-signup-otp', async (req, res) => {
   const { userId } = req.body;
   if (!userId) return res.status(400).json({ error: 'User ID (email) is required' });
