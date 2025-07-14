@@ -110,7 +110,6 @@ const authenticateToken = (req, res, next) => {
 
 };
 
-const token = jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '24h' });
 
 // Utility
 async function getNextEntryId() {
