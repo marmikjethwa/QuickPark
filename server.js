@@ -8,8 +8,7 @@ const path = require('path');
 const nodemailer = require('nodemailer');
 require('dotenv').config();
 
-
-const fetch = require('node-fetch');
+const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 
 const app = express();
 const PORT = process.env.PORT || 5000;
