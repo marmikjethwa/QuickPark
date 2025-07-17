@@ -329,10 +329,14 @@ app.post('/api/vendor/send-signup-otp', async (req, res) => {
   }
 });
 
+aconst fetch = require('node-fetch');
+
 app.post('/api/ocr', authenticateToken, async (req, res) => {
   try {
     const { base64Image } = req.body;
     if (!base64Image) return res.status(400).json({ error: 'Image required' });
+
+    console.log("base64Image received:", base64Image.substring(0, 50));
 
     const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`, {
       method: 'POST',
@@ -359,6 +363,7 @@ app.post('/api/ocr', authenticateToken, async (req, res) => {
     const result = await response.json();
 
     if (result.error) {
+      console.error("Gemini API error:", result.error);
       return res.status(500).json({ error: 'OCR failed', details: result.error.message });
     }
 
@@ -366,6 +371,7 @@ app.post('/api/ocr', authenticateToken, async (req, res) => {
     res.json({ text });
 
   } catch (err) {
+    console.error("OCR route error:", err);
     res.status(500).json({ error: 'OCR failed', details: err.message });
   }
 });
