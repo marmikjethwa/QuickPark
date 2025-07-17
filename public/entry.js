@@ -84,17 +84,31 @@ const token = localStorage.getItem('token');
     }
 
     async function startCamera(deviceId) {
+  try {
+    const constraints = deviceId
+      ? { video: { deviceId: { exact: deviceId } } }
+      : { video: true };  // fallback
+
+    const stream = await navigator.mediaDevices.getUserMedia(constraints);
+    currentStream = stream;
+    document.getElementById('video').srcObject = stream;
+  } catch (err) {
+    showModal('Could not access camera', true);
+    console.error("getUserMedia error:", err);
+
+    // Retry without deviceId if exact match fails
+    if (err.name === 'OverconstrainedError') {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: { deviceId: { exact: deviceId } }
-        });
-        currentStream = stream;
-        document.getElementById('video').srcObject = stream;
-      } catch (err) {
-        showModal('Could not access camera', true);
-        console.error("getUserMedia error:", err);
+        const fallbackStream = await navigator.mediaDevices.getUserMedia({ video: true });
+        currentStream = fallbackStream;
+        document.getElementById('video').srcObject = fallbackStream;
+      } catch (fallbackErr) {
+        console.error("Fallback failed:", fallbackErr);
       }
     }
+  }
+}
+
 
     async function captureAndScan() {
       const video = document.getElementById('video');
