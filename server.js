@@ -6,10 +6,16 @@ const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const path = require('path');
 const nodemailer = require('nodemailer');
-require('dotenv').config();
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config();
+}
+
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const geminiApiKey = process.env.GEMINI_API_KEY;
+console.log("GEMINI_API_KEY:", geminiApiKey);
+
 console.log("MONGO_URI:", process.env.MONGO_URI);
 console.log("GEMINI_API_KEY:", process.env.GEMINI_API_KEY);
 console.log("JWT_SECRET:", process.env.JWT_SECRET);
