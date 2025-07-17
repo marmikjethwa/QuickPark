@@ -329,7 +329,7 @@ app.post('/api/vendor/send-signup-otp', async (req, res) => {
   }
 });
 
-const fetch = require('node-fetch');
+//const fetch = require('node-fetch');
 
 app.post('/api/ocr', authenticateToken, async (req, res) => {
   try {
