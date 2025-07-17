@@ -57,32 +57,42 @@ const token = localStorage.getItem('token');
 
     async function openCamera() {
       document.getElementById('cameraSection').style.display = 'block';
-      const cameraSelect = document.getElementById('cameraSelect');
-      const devices = await navigator.mediaDevices.enumerateDevices();
-      const videoDevices = devices.filter(device => device.kind === 'videoinput');
 
-      cameraSelect.innerHTML = videoDevices.map(
-        (device, i) => `<option value="${device.deviceId}">${device.label || `Camera ${i + 1}`}</option>`
-      ).join('');
+      try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const videoDevices = devices.filter(device => device.kind === 'videoinput');
+        const cameraSelect = document.getElementById('cameraSelect');
 
-      cameraSelect.onchange = () => {
-        if (currentStream) currentStream.getTracks().forEach(track => track.stop());
-        startCamera(cameraSelect.value);
-      };
+        cameraSelect.innerHTML = videoDevices.map(
+          (device, i) => `<option value="${device.deviceId}">${device.label || `Camera ${i + 1}`}</option>`
+        ).join('');
 
-      if (videoDevices.length > 0) {
-        startCamera(videoDevices[0].deviceId);
+        cameraSelect.onchange = () => {
+          if (currentStream) currentStream.getTracks().forEach(track => track.stop());
+          startCamera(cameraSelect.value);
+        };
+
+        if (videoDevices.length > 0) {
+          startCamera(videoDevices[0].deviceId);
+        } else {
+          showModal("No video devices found", true);
+        }
+      } catch (err) {
+        showModal("Camera access failed", true);
+        console.error("Camera init error:", err);
       }
     }
 
     async function startCamera(deviceId) {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: deviceId } } });
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { deviceId: { exact: deviceId } }
+        });
         currentStream = stream;
         document.getElementById('video').srcObject = stream;
       } catch (err) {
         showModal('Could not access camera', true);
-        console.error(err);
+        console.error("getUserMedia error:", err);
       }
     }
 
@@ -92,8 +102,8 @@ const token = localStorage.getItem('token');
       const ctx = canvas.getContext('2d');
       const status = document.getElementById('statusMsg');
 
-      canvas.width = 640;
-      canvas.height = 480;
+      canvas.width = video.videoWidth || 640;
+      canvas.height = video.videoHeight || 480;
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
       const imageBlob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));

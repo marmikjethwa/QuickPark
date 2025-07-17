@@ -393,6 +393,6 @@ app.use('*', (req, res) => res.status(404).json({ error: 'Route not found' }));
 
 // Start server
 app.listen(PORT, async () => {
-    console.log(`Laude chaalu ho gayaa at Port: ${PORT}`);
+    console.log(`Running on port: ${PORT}`);
     await initializeDatabase();
 });
