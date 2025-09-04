@@ -182,8 +182,8 @@ app.post('/api/vendor/login', async (req, res) => {
     await transporter.sendMail({
       from: '"QuickPark PMS" <marmikjethwa@gmail.com>',
       to: userId,
-      subject: 'Your Login OTP - Momentum Parking System',
-      text: `Hello ${userId},\n\nYour OTP for login is: ${otp}\n\nThank you,\nMomentum PMS Team`
+      subject: 'Your Login OTP - QuickPark Parking System',
+      text: `Hello ${userId},\n\nYour OTP for login is: ${otp}\n\nThank you,\nQuickPark PMS Team`
     });
 
     res.json({ message: `OTP:${otp}sent to email`, tempUserId: userId });
