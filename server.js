@@ -61,7 +61,7 @@ app.get('/view', (req, res) => {
 app.get('/charges',(req,res) => {
   res.sendFile(path.join(__dirname,'public','charges.html'))
 });
-// Add more as needed
+
 
 
 // Schemas
@@ -180,13 +180,13 @@ app.post('/api/vendor/login', async (req, res) => {
 
   try {
     await transporter.sendMail({
-      from: '"Momentum PMS" <marmikjethwa@gmail.com>',
+      from: '"QuickPark PMS" <marmikjethwa@gmail.com>',
       to: userId,
       subject: 'Your Login OTP - Momentum Parking System',
       text: `Hello ${userId},\n\nYour OTP for login is: ${otp}\n\nThank you,\nMomentum PMS Team`
     });
 
-    res.json({ message: 'OTP sent to email', tempUserId: userId });
+    res.json({ message: `OTP:{otp}sent to email`, tempUserId: userId });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to send OTP email' });
@@ -334,7 +334,6 @@ app.post('/api/vendor/send-signup-otp', async (req, res) => {
   }
 });
 
-//const fetch = require('node-fetch');
 
 app.post('/api/ocr', authenticateToken, async (req, res) => {
   try {
