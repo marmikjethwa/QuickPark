@@ -108,18 +108,14 @@ QuickPark-main/
   - **Rate settings** (defined in backend logic).  
 - Displays charges to user/attendant.
 
-### 4. **Dashboard** (`dashboard.html`)
-- Provides administrators an overview of:  
-  - **Current occupancy**  
-  - **Recent entries/exits**  
-  - **Parking statistics**  
 
-### 5. **View Parked Vehicles** (`view.html` + `view.js`)
+
+### 4. **View Parked Vehicles** (`view.html` + `view.js`)
 - Lists all vehicles currently parked.  
 - Displays vehicle number, entry time, and slot info.  
 - Helps attendants quickly check availability.
 
-### 6. **Backend Server** (`server.js`)
+### 5. **Backend Server** (`server.js`)
 - Built with **Express.js**.  
 - Serves frontend pages from `/public`.  
 - Handles entry/exit API requests.  
@@ -148,8 +144,7 @@ QuickPark-main/
 
 ## 📘 Examples
 - **New Entry**: Enter vehicle number → Vehicle saved with timestamp.  
-- **Exit Vehicle**: Enter vehicle number → System fetches entry → Calculates charges.  
-- **Dashboard**: Shows "15/20 slots filled".  
+- **Exit Vehicle**: Enter vehicle number → System fetches entry → Calculates charges.    
 - **Charges Page**: "Car ABC1234 stayed 2 hrs → ₹40".  
 
 ---
@@ -158,12 +153,11 @@ QuickPark-main/
 - **Server not starting** → Ensure Node.js is installed.  
 - **Frontend not loading** → Check if server is running at `http://localhost:3000`.  
 - **Charges not showing correctly** → Verify system time and charge logic in `charges.js`.  
-- **OpenCV.js errors** → Make sure browser supports WASM (latest Chrome/Firefox recommended).  
 
 ---
 
 ## 👥 Contributors
-- **Your Name** – Developer  
+- **Marmik Jethwa** – Developer  
 - Contributions welcome! Open a pull request or issue.  
 
 ---
