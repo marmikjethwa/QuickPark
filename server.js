@@ -342,7 +342,10 @@ app.post('/api/ocr', authenticateToken, async (req, res) => {
 
     console.log("base64Image received:", base64Image.substring(0, 50));
 
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`, {
+    const modelName = 'gemini-2.5-flash';
+    const apiEndpoint = `https://generativelanguage.googleapis.com/v1/models/${modelName}:generateContent?key=${geminiApiKey}`;
+
+    const response = await fetch(apiEndpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
