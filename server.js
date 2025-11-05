@@ -1,11 +1,10 @@
-// Load environment and packages
 const express = require('express');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const path = require('path');
-const nodemailer = require('nodemailer');
+const emailjs = require('@emailjs/nodejs');
 require('dotenv').config();
 
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
@@ -13,31 +12,19 @@ const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fet
 const app = express();
 const PORT = process.env.PORT || 5000;
 const geminiApiKey = process.env.GEMINI_API_KEY;
-console.log("GEMINI_API_KEY:", geminiApiKey);
 
 console.log("MONGO_URI:", process.env.MONGO_URI);
 console.log("GEMINI_API_KEY:", process.env.GEMINI_API_KEY);
 console.log("JWT_SECRET:", process.env.JWT_SECRET);
-console.log("GMAIL_APP_PASSWORD:", process.env.GMAIL_APP_PASSWORD);
+console.log("EMAILJS_SERVICE_ID:", process.env.EMAILJS_SERVICE_ID);
+console.log("EMAILJS_PUBLIC_KEY:", process.env.EMAILJS_PUBLIC_KEY);
 
-// Middleware
 app.use(express.json({ limit: '10mb' }));
 app.use(cors());
 app.use(express.static('public'));
 
-// Temporary OTP storage
-const otpMap = new Map(); // userId -> otp
+const otpMap = new Map();
 
-// Nodemailer transporter setup
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: 'marmikjethwa@gmail.com',
-    pass: process.env.GMAIL_APP_PASSWORD // store in .env
-  }
-});
-
-// MongoDB connection
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
@@ -62,9 +49,6 @@ app.get('/charges',(req,res) => {
   res.sendFile(path.join(__dirname,'public','charges.html'))
 });
 
-
-
-// Schemas
 const vendorSchema = new mongoose.Schema({
   userId: { type: String, required: true, unique: true, trim: true },
   password: { type: String, required: true },
@@ -99,13 +83,11 @@ const counterSchema = new mongoose.Schema({
   value: Number
 });
 
-// Models
 const Vendor = mongoose.model('Vendor', vendorSchema);
 const Vehicle = mongoose.model('Vehicle', vehicleSchema);
 const ParkingLot = mongoose.model('ParkingLot', parkingLotSchema);
 const Counter = mongoose.model('Counter', counterSchema);
 
-// Auth middleware
 const authenticateToken = (req, res, next) => {
   const token = req.headers['authorization']?.split(' ')[1];
   if (!token) return res.status(401).json({ error: 'Token required' });
@@ -116,11 +98,8 @@ const authenticateToken = (req, res, next) => {
   next();
 });
 
-
 };
 
-
-// Utility
 async function getNextEntryId() {
   const counter = await Counter.findOneAndUpdate(
     { name: 'entryId' },
@@ -135,7 +114,6 @@ async function findAvailableParkingLot(vendorId) {
   return lot?.lotNumber || null;
 }
 
-
 async function initializeDatabase() {
   if (await ParkingLot.countDocuments() === 0) {
     await ParkingLot.insertMany(Array.from({ length: 100 }, (_, i) => ({ lotNumber: i + 1 })));
@@ -145,7 +123,6 @@ async function initializeDatabase() {
   }
 }
 
-// Routes
 app.post('/api/vendor/register', async (req, res) => {
   const { userId, password, fixedCharge, hourlyCharge } = req.body;
   if (!userId || !password) return res.status(400).json({ error: 'Missing fields' });
@@ -156,7 +133,6 @@ app.post('/api/vendor/register', async (req, res) => {
   const hashed = await bcrypt.hash(password, 10);
   const vendor = await Vendor.create({ userId, password: hashed, fixedCharge, hourlyCharge });
 
-  // Create 100 lots for this vendor
   const lots = Array.from({ length: 100 }, (_, i) => ({
     lotNumber: i + 1,
     vendorId: userId,
@@ -174,21 +150,30 @@ app.post('/api/vendor/login', async (req, res) => {
   if (!vendor || !(await bcrypt.compare(password, vendor.password)))
     return res.status(401).json({ error: 'Invalid credentials' });
 
-  // Generate OTP
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
   otpMap.set(userId, otp);
 
   try {
-    await transporter.sendMail({
-      from: '"QuickPark PMS" <marmikjethwa@gmail.com>',
-      to: userId,
-      subject: 'Your Login OTP - QuickPark Parking System',
-      text: `Hello ${userId},\n\nYour OTP for login is: ${otp}\n\nThank you,\nQuickPark PMS Team`
-    });
+    const templateParams = {
+      to_email: userId,
+      user_id: userId,
+      otp: otp,
+      subject: 'Your Login OTP - QuickPark Parking System'
+    };
+    
+    await emailjs.send(
+      process.env.EMAILJS_SERVICE_ID,
+      process.env.EMAILJS_LOGIN_TEMPLATE_ID,
+      templateParams,
+      {
+        publicKey: process.env.EMAILJS_PUBLIC_KEY,
+        privateKey: process.env.EMAILJS_PRIVATE_KEY,
+      }
+    );
 
-    res.json({ message: `OTP:${otp}sent to email`, tempUserId: userId });
+    res.json({ message: `OTP sent to email`, tempUserId: userId });
   } catch (err) {
-    console.error(err);
+    console.error("EmailJS error:", err);
     res.status(500).json({ error: 'Failed to send OTP email' });
   }
 });
@@ -320,16 +305,26 @@ app.post('/api/vendor/send-signup-otp', async (req, res) => {
   otpMap.set(userId, otp);
 
   try {
-    await transporter.sendMail({
-      from: '"QuickPark PMS" <marmiksjethwa10@gmail.com>',
-      to: userId,
-      subject: 'Your Signup OTP - QuickPark Parking System',
-      text: `Hello,\n\nYour OTP for signup is: ${otp}\n\nThank you,\nQuickPark PMS Team`
-    });
+    const templateParams = {
+      to_email: userId,
+      user_id: userId,
+      otp: otp,
+      subject: 'Your Signup OTP - QuickPark Parking System'
+    };
+    
+    await emailjs.send(
+      process.env.EMAILJS_SERVICE_ID,
+      process.env.EMAILJS_SIGNUP_TEMPLATE_ID,
+      templateParams,
+      {
+        publicKey: process.env.EMAILJS_PUBLIC_KEY,
+        privateKey: process.env.EMAILJS_PRIVATE_KEY,
+      }
+    );
 
     res.json({ message: 'OTP sent to email' });
   } catch (err) {
-    console.error(err);
+    console.error("EmailJS error:", err);
     res.status(500).json({ error: 'Failed to send OTP' });
   }
 });
@@ -396,15 +391,12 @@ app.post('/api/vendor/verify-signup-otp', (req, res) => {
   }
 });
 
-// Serve frontend
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Fallback routes
 app.use('*', (req, res) => res.status(404).json({ error: 'Route not found' }));
 
-// Start server
 app.listen(PORT, async () => {
     console.log(`Running on port: ${PORT}`);
     await initializeDatabase();
